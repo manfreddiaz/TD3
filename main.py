@@ -13,27 +13,36 @@ import DDPG
 # Runs policy for X episodes and returns average reward
 def evaluate_policy(policy, eval_episodes=10):
 	avg_reward = 0.
-	for _ in xrange(eval_episodes):
+	episodes_success = []
+	for _ in range(eval_episodes):
+		timesteps = 0
 		obs = env.reset()
 		done = False
+
 		while not done:
+			timesteps += 1
 			action = policy.select_action(np.array(obs))
 			obs, reward, done, _ = env.step(action)
 			avg_reward += reward
 
+		done = 0 if timesteps + 1 == env._max_episode_steps else float(done)
+
+		episodes_success.append(done)
+
 	avg_reward /= eval_episodes
 
-	print "---------------------------------------"
-	print "Evaluation over %d episodes: %f" % (eval_episodes, avg_reward)
-	print "---------------------------------------"
+	print("---------------------------------------")
+	print("Evaluation over %d episodes: %f" % (eval_episodes, avg_reward))
+	print("Success rate:", np.mean(np.array(episodes_success)))
+	print("---------------------------------------")
 	return avg_reward
 
 
 if __name__ == "__main__":
 	
 	parser = argparse.ArgumentParser()
-	parser.add_argument("--policy_name", default="TD3")					# Policy name
-	parser.add_argument("--env_name", default="HalfCheetah-v1")			# OpenAI gym environment name
+	parser.add_argument("--policy_name", default="DDPG")					# Policy name
+	parser.add_argument("--env_name", default="Pusher-v2")			# OpenAI gym environment name
 	parser.add_argument("--seed", default=0, type=int)					# Sets Gym, PyTorch and Numpy seeds
 	parser.add_argument("--start_timesteps", default=1e4, type=int)		# How many time steps purely random policy is run for
 	parser.add_argument("--eval_freq", default=5e3, type=float)			# How often (time steps) we evaluate
@@ -49,9 +58,9 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	file_name = "%s_%s_%s" % (args.policy_name, args.env_name, str(args.seed))
-	print "---------------------------------------"
-	print "Settings: %s" % (file_name)
-	print "---------------------------------------"
+	print("---------------------------------------")
+	print("Settings: %s" % (file_name))
+	print("---------------------------------------")
 
 	if not os.path.exists("./results"):
 		os.makedirs("./results")
