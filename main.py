@@ -91,7 +91,9 @@ if __name__ == "__main__":
 	total_timesteps = 0
 	timesteps_since_eval = 0
 	episode_num = 0
-	done = True 
+	done = True
+	episode_timesteps = 0
+	episode_reward = 0
 
 	while total_timesteps < args.max_timesteps:
 		
