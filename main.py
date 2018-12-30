@@ -25,7 +25,7 @@ def evaluate_policy(policy, eval_episodes=10):
 			obs, reward, done, _ = env.step(action)
 			avg_reward += reward
 
-		done = 0 if timesteps + 1 == env._max_episode_steps else float(done)
+		done = 0 if timesteps == env._max_episode_steps else float(done)
 
 		episodes_success.append(done)
 
